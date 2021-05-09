@@ -24,24 +24,13 @@ TEST_CASE("test #1 of the table function") {
     CHECK(table[' '] == 4);
 }
 
-TEST_CASE("test #2 of the table function")  {
-  stringstream in;
-  in << "Остановиста, бэйби";
-
-  array<size_t, 256> table = exctract_counts(in);
-  CHECK(table[to_code('б')] == 2);
-  CHECK(table[to_code('й')] == 1);
-  CHECK(table[','] == 1);
-  CHECK(table['.'] == 0);
-}
-
-TEST_CASE("test #3 of the table function") {
+TEST_CASE("test #2 of the table function") {
   stringstream in;
   in << "";
 
   array<size_t, 256> table = exctract_counts(in);
-  CHECK(table[to_code('л')] == 0);
-  CHECK(table[to_code('ф')] == 0);
+  CHECK(table[to_code('f')] == 0);
+  CHECK(table[to_code('k')] == 0);
   CHECK(table['.'] == 0);
   CHECK(table['$'] == 0);
   CHECK(table['\n'] == 0);
@@ -209,61 +198,6 @@ TEST_CASE("ALL IN encoding test for 1-symbol code") {
   CHECK(result2.compressed == 1);
 }
 
-TEST_CASE("Big English test for ALL IN encoding") {
-  stringstream in, out, new_in;
-  string s = R"LONG(I gaze in sorrow upon our generation!
-  Its future is either dark or empty,
-  And under a burden of knowledge and doubt,
-  It will grow old, having accomplished nothing.
-  We are aware, straight from our cribs,
-  Of our forefather's mistakes and late maturity;
-  And thus our lives are tedious, like a path with no goal,
-  Like a feast at a foreign celebration.
-  For shame! We are indifferent to both good and evil,
-  And fade without a battle at the start of our careers;
-  We are dishonorable cowards in the face of danger,
-  And despicable slaves before authority.
-  We are like a non-ripe fruit,
-  (That orphaned stranger hanging amongst flowers)
-  Which brings no joy to our eyes or mouths,
-  And falls when the flowers bloom!
-  Fruitless science has dried our minds,
-  And we jealously guard from friends and family
-  Our best hopes and noble voice,
-  For our passions have been ridiculed.
-  We have barely touched the cup of pleasure,
-  And yet we managed to waste our youthful strength;
-  From every joy, afraid of being full,
-  We drank once, and that was enough.
-  The dreams of poetry and works of art
-  Do not instill in us delightful awe;
-  We greedily cherish what feeling remains in our heart,
-  For it is a useless treasure, buried by miserliness.
-  By chance we love and hate,
-  Giving nothing to either anger or love,
-  And a strange chill remains in our souls
-  Even while our blood boils.
-  We are bored by the opulent amusements of our forefathers,
-  By their honest and lighthearted debauchery;
-  And even to our graves we hurry without joy or glory,
-  But look back with derision.
-  As part of a sombre and soon forgotten crowd
-  We will quietly pass over the world, leaving nary a trace,
-  Nor a fruitful thought for eternity to ponder over,
-  Nor the genius of some starter work.
-  And a descendant, with the strictness of both judge and jury,
-  Will derisively speak of our remains.
-  He will know only the bitter scorn of a son
-  Whose father wasted a life in vain.)LONG";
-  in << s;
-
-  HuffArchiver archiver = HuffArchiver(in, out);
-  archiver.zip();
-  HuffArchiver unarchiver = HuffArchiver(out, new_in);
-  unarchiver.unzip();
-  CHECK(new_in.str() == in.str());
-}
-
 TEST_CASE("Big Russian test for ALL IN encoding") {
   stringstream in, out, new_in;
   string s = R"LONG(Ха!
@@ -370,7 +304,7 @@ TEST_CASE("ULTRA flex-mix (rus + eng) test ALL IN") {
   CHECK(new_in.str() == in.str());
 };
 
-TEST_CASE("Empty file") {
+TEST_CASE("ALL IN encoding of an empty file") {
   stringstream in, out, new_in;
   HuffArchiver archiver = HuffArchiver(in, out);
   archiver.zip();
@@ -382,55 +316,7 @@ TEST_CASE("Empty file") {
   CHECK(new_in.str().length() == 0);
 }
 
-TEST_CASE("Wiki test: 15 7 6 6 5") {
-  string a(15, 'a');
-  string b(7, 'b');
-  string c(6, 'c');
-  string d(6, 'd');
-  stringstream in, out, decoded_out;
-  in << a << b << c << d << '\0';
-  HuffArchiver archiver = HuffArchiver(in, out);
-  CompressionInfo result = archiver.zip();
-  CHECK(result.compressed == 87 / CHAR_BIT);
-}
-
-TEST_CASE("Fibonacci freqs stress test" * doctest::timeout(5.0)) {
-  vector<int> fib = {1,     1,     2,     3,    5,    8,    13,
-                          21,    34,    55,    89,   144,  233,  377,
-                          610,   987,   1597,  2584, 4181, 6765, 10946,
-                          17711, 28657, 46368, 75025};
-  stringstream in, out, new_in;
-
-  int start_code = 5;
-  for (auto const f : fib) {
-    for (int i = 0; i < f; i++)
-      in << char(start_code);
-    start_code++;
-  }
-  HuffArchiver archiver = HuffArchiver(in, out);
-  archiver.zip();
-  HuffArchiver unarchiver = HuffArchiver(out, new_in);
-  unarchiver.unzip();
-  CHECK(new_in.str().length() == 196418 - 1); // F(n + 2) - 1
-}
-/*
-TEST_CASE("Stress testing 5mb file" * doctest::timeout(5.0)) {
-  const int chars = 5000000;
-  stringstream in, out, new_in;
-  vector<char> codes;
-  for (int i = 0; i < chars; i++) {
-    int index = rand() % 128;
-    codes.push_back(char(index));
-  }
-  copy(codes.begin(), codes.end(), ostream_iterator<char>(in));
-  HuffArchiver archiver = HuffArchiver(in, out);
-  archiver.zip();
-  HuffArchiver unarchiver = HuffArchiver(out, new_in);
-  unarchiver.unzip();
-  CHECK(in.str() == new_in.str());
-}
-*/
-TEST_CASE("Encoding creation for CHAR_BIT bits stream") {
+TEST_CASE("ALL IN encoding of bits stream") {
   stringstream in, out, new_in;
   vector<char> codes;
   for (int i = 0; i < CHAR_BIT; i++) {
@@ -442,19 +328,4 @@ TEST_CASE("Encoding creation for CHAR_BIT bits stream") {
 
   CompressionInfo result2 = HuffArchiver(out, new_in).unzip();
   CHECK(result2.compressed == CHAR_BIT);
-}
-
-TEST_CASE("Encoding creation for CHAR_BIT + 1 bits stream") {
-  stringstream in, out, new_in;
-  vector<char> codes;
-  for (int i = 0; i < CHAR_BIT + 1; i++) {
-    codes.push_back(char(i));
-  }
-  copy(codes.begin(), codes.end(), ostream_iterator<char>(in));
-
-  CompressionInfo result1 = HuffArchiver(in, out).zip();
-  CHECK(result1.original == CHAR_BIT + 1);
-
-  CompressionInfo result2 = HuffArchiver(out, new_in).unzip();
-  CHECK(result2.compressed == CHAR_BIT + 1);
 }

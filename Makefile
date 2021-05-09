@@ -1,6 +1,6 @@
 .PHONY: all clean
 
-FLAGS = -O2 -Wall -Wextra -std=c++11 -pedantic -Isrc
+FLAGS = -O2 -Wall -Wextra -std=c++11 -Isrc
 TEST_FLAGS = $(FLAGS) -Itest
 CXX = g++
 
