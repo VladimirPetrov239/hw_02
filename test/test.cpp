@@ -110,7 +110,7 @@ TEST_CASE("test of tree creation") {
   CHECK(root->cnt_ == 15);
   CHECK(root->left_->cnt_ == 7);
   CHECK(root->right_->cnt_ == 8);
-};
+}
 
 TEST_CASE("test of the bin_write function") {
   stringstream s;
@@ -262,7 +262,7 @@ TEST_CASE("Big English test for ALL IN encoding") {
   HuffArchiver unarchiver = HuffArchiver(out, new_in);
   unarchiver.unzip();
   CHECK(new_in.str() == in.str());
-};
+}
 
 TEST_CASE("Big Russian test for ALL IN encoding") {
   stringstream in, out, new_in;
@@ -303,7 +303,7 @@ TEST_CASE("Big Russian test for ALL IN encoding") {
   HuffArchiver unarchiver = HuffArchiver(out, new_in);
   unarchiver.unzip();
   CHECK(new_in.str() == in.str());
-};
+}
 
 TEST_CASE("ULTRA flex-mix (rus + eng) test ALL IN") {
   stringstream in, out, new_in;

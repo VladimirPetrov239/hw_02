@@ -22,18 +22,18 @@ unsigned char to_char(int i) {
 }
 
 TreeNode::TreeNode(size_t cnt, unsigned char letter) :
-cnt_(cnt), letter_(letter), left_(nullptr), right_(nullptr) {};
+cnt_(cnt), letter_(letter), left_(nullptr), right_(nullptr) {}
 
 TreeNode::TreeNode(size_t cnt, shared_ptr<TreeNode> left,
-  shared_ptr<TreeNode> right) : cnt_(cnt), left_(left), right_(right) {};
+  shared_ptr<TreeNode> right) : cnt_(cnt), left_(left), right_(right) {}
 
 shared_ptr<TreeNode> HuffTree::get_root(){
   return root;
-};
+}
 
 vector<bool> HuffTree::get_code(unsigned char letter){
   return final_codes[letter];
-};
+}
 
 struct Comparator {
   bool operator()(shared_ptr<TreeNode> const& n1, shared_ptr<TreeNode> const& n2) {
@@ -67,7 +67,7 @@ array<size_t, 256> exctract_counts(istream& input) {
 
   input.clear();
   return table;
-};
+}
 
 HuffTree::HuffTree(array<size_t, 256> table) {
 
@@ -120,10 +120,10 @@ size_t get_output_size(ostream& output) {
 }
 
 HuffArchiver::HuffArchiver(istream& input1, ostream& output1):
-input(input1), output(output1){};
+input(input1), output(output1){}
 
 BinaryWriter::BinaryWriter(ostream& output) :
-byte(0), pos(0), stream(output) {};
+byte(0), pos(0), stream(output) {}
 
 void BinaryWriter::write(char const* buffer, size_t cnt) {
   assert(pos == 0);
@@ -152,7 +152,7 @@ void BinaryWriter::shift_byte() {
 }
 
 BinaryReader::BinaryReader(istream& input) :
-byte(0), pos(0), stream(input) {};
+byte(0), pos(0), stream(input) {}
 
 void BinaryReader::read(char* buffer, size_t cnt) {
   assert(pos == 0);
@@ -269,4 +269,4 @@ CompressionInfo HuffArchiver::unzip() {
   result.original = get_input_size(input) - result.additional;
   result.compressed = get_output_size(output);
   return result;
-};
+}
